@@ -142,7 +142,7 @@ const handleSubmition = async () => {
           <p>Ingrese enfermedades heredadas</p>
         </div>
         <div class="group w-full col-span-6">
-          <GeneticTextAreaVue v-model="patient.diseases" />
+          <GeneticTextAreaVue v-model="patient.antecedentesF" />
         </div>
 
         <div class="group w-full col-span-3">

@@ -6,7 +6,9 @@ import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import FormPatientView from '../views/FormPatientView.vue'
+import DetailView from '../views/DetailView.vue'
 import {getAuth, onAuthStateChanged, signOut} from "firebase/auth";
+import Swal from 'sweetalert2'
 
 const router = createRouter({
   history: createWebHistory(), 
@@ -52,6 +54,7 @@ const router = createRouter({
     },
     { path: '/post/:id', name: 'post', component: PostView },
     { path: '/author/:username', name: 'author', component: AuthorView },
+    { path: '/detail/', name: 'detail', component: DetailView }
   ]
 })
 
@@ -74,13 +77,18 @@ async function guardRoute(to,from,next) {
     if (await getCurrentUser()){
       next();
     } else {
-      alert("You don't have access!");
+      Swal.fire({
+        title: 'Error!',
+        text: 'No tienes acceso a esta ruta, inicia sesion primero',
+        icon: 'error',
+        confirmButtonText: 'Iniciar Sesion'
+      })
       next("/login");
     }
   } else {
     next();
   }
 }
-// router.beforeEach(guardRoute);
+router.beforeEach(guardRoute);
 
 export default router
