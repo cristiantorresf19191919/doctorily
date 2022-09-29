@@ -6,9 +6,9 @@ import GeneticTextAreaVue from '../components/GeneticTextArea.vue';
 import useGenericField from '../hooks/useGenericField';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { getStorage, ref as fireRef, uploadBytes, getMetadata, getDownloadURL } from "firebase/storage";
 import { auth, firebaseApp } from '../firebaseConfig';
-import { doc, setDoc } from "firebase/firestore";
 import Toaster from '../components/icons/CheckedIcon.vue';
 
 const patient = reactive({ names: '', cc: '', email: '', city: '', toxicBehaviors: [] })
@@ -22,19 +22,62 @@ watch(patient, () => {
 
 const router = useRouter();
 
+const showSpinner = ref(false);
+
+const imageFileSeleceted = ref();
+
 const handleSubmition = async () => {
+  showSpinner.value = true;
   const db = getFirestore(firebaseApp);
   const patientsCollection = collection(db, 'patients');
   const patientsSnapshot = await getDocs(patientsCollection);
-  await setDoc(doc(db, "patients", uuidv4()), { ...patient });
+  const newId = uuidv4()
   triggerToast.value = true;
-  setTimeout(() => router.push("/dashboard"), 1300);
+  // Create a root reference
+  const storage = getStorage();
+  // Create a reference to 'mountains.jpg'
+  const storageRef = fireRef(storage, imageFileSeleceted.value?.name);
+  // 'file' comes from the Blob or File API
+  try {
+    const snapshot = await uploadBytes(storageRef, imageFileSeleceted.value);
+    console.log('🚀snapshot >>', snapshot);
+    console.log('Uploaded a blob or file!');
+    const imagePath = snapshot.metadata.fullPath;
+    const savedImageRef = fireRef(storage, imagePath);
+    const urlImage = await getDownloadURL(savedImageRef);
+    await setDoc(doc(db, "patients", newId), { ...patient, urlImage });
+    const handleAfterSuccessOperation = () => {
+      showSpinner.value = false;
+      router.push("/dashboard");
+    }
+    setTimeout(handleAfterSuccessOperation, 1300);
+  } catch (e) {
+    console.log(e)
+  }
+ 
 }
+
+const onImageSelected = (event) => {
+  if (!Array.isArray(event.files)) return
+  imageFileSeleceted.value = event.files[0];
+  console.log('🚀imageFileSeleceted.value  >>', imageFileSeleceted.value);
+}
+
+const onImageRemoved = (event) => {
+  imageFileSeleceted.value = "";
+}
+
+const onImageUploaded = (event) => {
+
+}
+
+const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
 
 
 </script>
 <template>
   <Toaster :isVisible="triggerToast" />
+  <ProgressSpinner v-if="showSpinner" strokeWidth="8" />
   <div class="max-w-4xl mx-auto mt-3 shadow-2xl p-7 rounded-lg">
     <h4 class="body-font text-indigo-600 text-center mt-3">
       Datos personales del paciente
@@ -234,6 +277,28 @@ const handleSubmition = async () => {
         </div>
       </div>
 
+      <div class="grid xl:grid-cols-1 my-8 border shadow">
+        <h5>Sube tu foto de portada</h5>
+        <FileUpload
+          name="file"
+          @select="onImageSelected"
+          @remove="onImageRemoved"
+          @upload="onImageUploaded"
+          :multiple="false"
+          :url="sendPicUrl()"
+          chooseLabel="Escoger"
+          :showUploadButton="false"
+          uploadLabel="Subir"
+          cancelLabel="Actualizar"
+          accept="image/*"
+          :maxFileSize="10000000"
+        >
+          <template #empty>
+            <p>Arrastra y suelta los archivos aca para guardar.</p>
+          </template>
+        </FileUpload>
+      </div>
+
       <div class="lg:flex lg:gap-4 lg:justify-center">
         <button
           type="button"
@@ -284,9 +349,50 @@ const handleSubmition = async () => {
     </form>
   </div>
 </template>
-<style lang="sass">
-svg.success-icon
-    position: absolute
-    top: 7px
-    left: 6px
+<style lang="scss">
+.p-progress-spinner {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999;
+  &::after {
+    content: "";
+    position: fixed;
+    background-color: #000000a1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translate3d(0,0,0) scale(17.5);
+    z-index: -1;
+  }
+
+  svg {
+   width: 10rem;
+   height: 10rem;
+   stroke-width: 4 !important;
+  }
+}
+.p-fileupload .p-fileupload-content {
+  height: 22rem;
+}
+.p-fileupload-row > div:first-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 !important;
+  img {
+    box-sizing: border-box;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+}
 </style>
