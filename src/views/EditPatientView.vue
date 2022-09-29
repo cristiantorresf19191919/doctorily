@@ -10,8 +10,7 @@ import { getFirestore, collection, getDocs, doc, setDoc } from 'firebase/firesto
 import { getStorage, ref as fireRef, uploadBytes, getMetadata, getDownloadURL } from "firebase/storage";
 import { auth, firebaseApp } from '../firebaseConfig';
 import Toaster from '../components/icons/CheckedIcon.vue';
-
-import { storeToRefs } from 'pinia';
+import { storeToRefs, MutationType } from 'pinia';
 import ToxicItemList from '../components/ToxicItemList.vue';
 import { usePatientsStore } from '../stores/patients';
 
@@ -20,19 +19,35 @@ import { usePatientsStore } from '../stores/patients';
 const triggerToast = ref(false);
 
 const router = useRouter();
-const route = useRoute(); 
+const route = useRoute();
+const patientStore = usePatientsStore();
 const { getCurrentPatient, resetToxicList } = usePatientsStore();
 getCurrentPatient(route.params.id)
 const { currentPatient: patient } = storeToRefs(usePatientsStore());
-watch( patient, () => resetToxicList() );
+const patientCopy = ref(patient);
 
-
+patientStore.$subscribe((mutation, state) => {
+  if (state.currentPatient.habitosToxicos.includes('Ninguna')) {
+    patientStore.$patch(mutatedState => {
+      mutatedState.currentPatient.habitosToxicos = []
+    });
+  }
+})
 
 const showSpinner = ref(false);
 
 const imageFileSeleceted = ref();
 
 const handleSubmition = async () => {
+
+  const savePatient = async (newId, urlImage) => {
+    const cleanPatient = JSON.parse(JSON.stringify(patient._object.currentPatient));
+    if (urlImage) {
+      setDoc(doc(db, "patients", newId), { ...cleanPatient, urlImage });
+    } else {
+      setDoc(doc(db, "patients", newId), { ...cleanPatient });
+    }
+  }
   showSpinner.value = true;
   const db = getFirestore(firebaseApp);
   const patientsCollection = collection(db, 'patients');
@@ -45,13 +60,15 @@ const handleSubmition = async () => {
   const storageRef = fireRef(storage, imageFileSeleceted.value?.name);
   // 'file' comes from the Blob or File API
   try {
-    const snapshot = await uploadBytes(storageRef, imageFileSeleceted.value);
-    console.log('🚀snapshot >>', snapshot);
-    console.log('Uploaded a blob or file!');
-    const imagePath = snapshot.metadata.fullPath;
-    const savedImageRef = fireRef(storage, imagePath);
-    const urlImage = await getDownloadURL(savedImageRef);
-    await setDoc(doc(db, "patients", newId), { ...patient, urlImage });
+    if (!imageFileSeleceted.value) {
+      await savePatient(newId);
+    } else {
+      const snapshot = await uploadBytes(storageRef, imageFileSeleceted.value);
+      const imagePath = snapshot.metadata.fullPath;
+      const savedImageRef = fireRef(storage, imagePath);
+      const urlImage = await getDownloadURL(savedImageRef);
+      await savePatient(newId, urlImage);
+    }
     const handleAfterSuccessOperation = () => {
       showSpinner.value = false;
       router.push("/dashboard");
@@ -80,7 +97,7 @@ const onImageUploaded = (event) => {
 const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
 
 const goBackToDetail = () => {
-    router.push("/detail/"+route.params.id);
+  router.push("/detail/" + route.params.id);
 }
 
 
@@ -90,7 +107,19 @@ const goBackToDetail = () => {
   <ProgressSpinner v-if="showSpinner" strokeWidth="8" />
 
   <div class="max-w-4xl mx-auto mt-3 shadow-2xl p-7 rounded-lg">
-    <span class="back-icon" @click="goBackToDetail"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.296 16.294a1 1 0 1 0 1.415 1.414l4.997-5.004a1 1 0 0 0 0-1.413L15.71 6.293a1 1 0 0 0-1.415 1.414L17.59 11H11a8 8 0 0 0-7.996 7.75L3 19a1 1 0 1 0 2 0 6 6 0 0 1 5.775-5.996L11 13h6.586l-3.29 3.294Z" fill="#212121"/></svg></span>
+    <span class="back-icon" @click="goBackToDetail"
+      ><svg
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14.296 16.294a1 1 0 1 0 1.415 1.414l4.997-5.004a1 1 0 0 0 0-1.413L15.71 6.293a1 1 0 0 0-1.415 1.414L17.59 11H11a8 8 0 0 0-7.996 7.75L3 19a1 1 0 1 0 2 0 6 6 0 0 1 5.775-5.996L11 13h6.586l-3.29 3.294Z"
+          fill="#212121"
+        /></svg
+    ></span>
     <h4 class="body-font text-indigo-600 text-center mt-3">
       EDITAR DATOS PERSONALES DEL PACIENTE
     </h4>
@@ -184,7 +213,7 @@ const goBackToDetail = () => {
       </div>
       <div class="grid xl:flex xl:gap-6 mt-4 w-full">
         <div class="group">Observaciones Medicas:</div>
-        <div class="group w-full">            
+        <div class="group w-full">
           <GeneticTextAreaVue v-model="patient.observacionesMedicas" />
         </div>
       </div>
@@ -332,20 +361,19 @@ const goBackToDetail = () => {
           <template #empty>
             <p>Arrastra y suelta los archivos aca para guardar.</p>
             <div class="current-image" v-if="patient?.urlImage">
-            <img
+              <img
                 alt="ecommerce"
                 class="
-                    lg:w-1/2
-                    w-full
-                    lg:h-auto
-                    h-64
-                    object-cover object-center
-                    rounded
+                  lg:w-1/2
+                  w-full
+                  lg:h-auto
+                  h-64
+                  object-cover object-center
+                  rounded
                 "
                 :src="patient.urlImage"
-                />
+              />
             </div>
-            
           </template>
         </FileUpload>
       </div>
@@ -446,25 +474,25 @@ const goBackToDetail = () => {
     width: 100%;
   }
 }
-.back-icon{
-    cursor: pointer;
-    font-size: 2rem;
-    svg{
-        transform: rotateY(180deg);
-        transition: all .5s ease;
-        &:hover{
-            stroke-width: 5;
-            font-weight: bold;
-            transform: rotateY(180deg) scale(1.1515);
-        }
+.back-icon {
+  cursor: pointer;
+  font-size: 2rem;
+  svg {
+    transform: rotateY(180deg);
+    transition: all 0.5s ease;
+    &:hover {
+      stroke-width: 5;
+      font-weight: bold;
+      transform: rotateY(180deg) scale(1.1515);
     }
+  }
 }
-.current-image{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
+.current-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 }
 </style>

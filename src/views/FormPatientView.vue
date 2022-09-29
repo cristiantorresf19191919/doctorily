@@ -26,6 +26,15 @@ const showSpinner = ref(false);
 
 const imageFileSeleceted = ref();
 
+const savePatient = async (newId, urlImage) => {  
+    const db = getFirestore(firebaseApp);
+    if (urlImage) {
+      setDoc(doc(db, "patients", newId), { ...patient, urlImage });
+    } else {
+      setDoc(doc(db, "patients", newId), { ...patient });
+    }
+  }
+
 const handleSubmition = async () => {
   showSpinner.value = true;
   const db = getFirestore(firebaseApp);
@@ -39,13 +48,17 @@ const handleSubmition = async () => {
   const storageRef = fireRef(storage, imageFileSeleceted.value?.name);
   // 'file' comes from the Blob or File API
   try {
-    const snapshot = await uploadBytes(storageRef, imageFileSeleceted.value);
-    console.log('🚀snapshot >>', snapshot);
-    console.log('Uploaded a blob or file!');
-    const imagePath = snapshot.metadata.fullPath;
-    const savedImageRef = fireRef(storage, imagePath);
-    const urlImage = await getDownloadURL(savedImageRef);
-    await setDoc(doc(db, "patients", newId), { ...patient, urlImage });
+    if (!imageFileSeleceted.value) {
+      await savePatient(newId)
+    } else {
+      const snapshot = await uploadBytes(storageRef, imageFileSeleceted.value);
+      console.log('🚀snapshot >>', snapshot);
+      console.log('Uploaded a blob or file!');
+      const imagePath = snapshot.metadata.fullPath;
+      const savedImageRef = fireRef(storage, imagePath);
+      const urlImage = await getDownloadURL(savedImageRef);
+      await savePatient(newId, urlImage);
+    }
     const handleAfterSuccessOperation = () => {
       showSpinner.value = false;
       router.push("/dashboard");
@@ -54,7 +67,7 @@ const handleSubmition = async () => {
   } catch (e) {
     console.log(e)
   }
- 
+
 }
 
 const onImageSelected = (event) => {
@@ -169,8 +182,8 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
         <div class="relative w-full group z-0">
           <GenericField v-model="patient.especialidad" label="Especialidad" />
         </div>
-       </div>
-       <div class="grid xl:flex xl:gap-6 mt-4 w-full">
+      </div>
+      <div class="grid xl:flex xl:gap-6 mt-4 w-full">
         <div class="group">Observaciones Medicas:</div>
         <div class="group w-full">
           <GeneticTextAreaVue v-model="patient.observacionesMedicas" />
@@ -258,7 +271,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
               >
             </div>
 
-              <div>
+            <div>
               <input
                 type="checkbox"
                 class="mx-2"
@@ -280,7 +293,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           <div class="w-full">
             <GeneticTextAreaVue v-model="patient.fisiologicos" />
           </div>
-           </div>
+        </div>
         <div class="xl:flex gap-4 justify-end">
           <div>Examenes</div>
           <div class="w-full">
@@ -388,14 +401,14 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
     bottom: 0;
     left: 0;
     right: 0;
-    transform: translate3d(0,0,0) scale(17.5);
+    transform: translate3d(0, 0, 0) scale(17.5);
     z-index: -1;
   }
 
   svg {
-   width: 10rem;
-   height: 10rem;
-   stroke-width: 4 !important;
+    width: 10rem;
+    height: 10rem;
+    stroke-width: 4 !important;
   }
 }
 .p-fileupload .p-fileupload-content {
