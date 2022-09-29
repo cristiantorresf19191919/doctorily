@@ -39,7 +39,7 @@ const props = defineProps(['fill', 'isVisible'])
       
 
       <!-- text -->
-      <h2 class="text-white max-w-xs">Paciente registrado con exito</h2>
+      <h2 class="text-white max-w-xs">Paciente Registrado con exito</h2>
     </div>
   </div>
 </template>

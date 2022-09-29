@@ -80,14 +80,14 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
   <ProgressSpinner v-if="showSpinner" strokeWidth="8" />
   <div class="max-w-4xl mx-auto mt-3 shadow-2xl p-7 rounded-lg">
     <h4 class="body-font text-indigo-600 text-center mt-3">
-      Datos personales del paciente
+      DATOS PERSONALES DEL PACIENTE
     </h4>
     <form>
       <div class="relative z-0 mb-6 w-full group">
         <GenericField
           v-model="patient.email"
           name="floating_email"
-          label="correo electronico"
+          label="Correo Electrónico"
         />
       </div>
       <div class="relative z-0 mb-6 w-full group">
@@ -123,7 +123,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           <GenericField
             v-model="patient.address"
             name="floating_email"
-            label="Direccion"
+            label="Dirección"
           />
         </div>
         <div class="relative z-0 mb-6 w-full group">
@@ -141,7 +141,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           />
         </div>
         <div class="relative z-0 mb-6 w-full group">
-          <GenericField v-model="patient.maritalStatus" label="Estado civil" />
+          <GenericField v-model="patient.maritalStatus" label="Estado Civil" />
         </div>
       </div>
       <div class="grid xl:grid-cols-2 xl:gap-8">
@@ -149,12 +149,12 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           <GenericField v-model="patient.entidad" label="Entidad" />
         </div>
         <div class="relative z-0 w-full group">
-          <GenericField v-model="patient.regimen" label="Regimen" />
+          <GenericField v-model="patient.régimen" label="Régimen" />
         </div>
       </div>
       <div class="grid xl:grid-cols-3 xl:gap-7 mt-4">
         <div class="relative w-full group z-0">
-          <GenericField v-model="patient.region" label="Region" />
+          <GenericField v-model="patient.región" label="Región" />
         </div>
         <div class="relative w-full group z-0">
           <GenericField v-model="patient.escolaridad" label="Escolaridad" />
@@ -162,8 +162,20 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
         <div class="relative w-full group z-0">
           <GenericField v-model="patient.alerta" label="Alerta" />
         </div>
+        <div class="relative w-full group z-0">
+          <GenericField v-model="patient.medico" label="Medico Tratante" />
+        </div>
+        <div class="relative w-full group z-0">
+          <GenericField v-model="patient.especialidad" label="Especialidad" />
+        </div>
+       </div>
+       <div class="grid xl:flex xl:gap-6 mt-4 w-full">
+        <div class="group">Observaciones Medicas:</div>
+        <div class="group w-full">
+          <GeneticTextAreaVue v-model="patient.diseases" />
+        </div>
       </div>
-      <h4 class="body-font text-indigo-600 text-center mt-3">Anamnesis</h4>
+      <h4 class="body-font text-indigo-600 text-center mt-3">ANAMNESIS</h4>
       <div class="grid xl:flex xl:gap-2 mt-4 w-full">
         <div class="group">Motivo de Consulta:</div>
         <div class="group w-full">
@@ -176,23 +188,34 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           <GeneticTextAreaVue v-model="patient.diseases" />
         </div>
       </div>
-
+      <div class="grid xl:flex xl:gap-6 mt-4 w-full">
+        <div class="group">Observaciones Generales:</div>
+        <div class="group w-full">
+          <GeneticTextAreaVue v-model="patient.diseases" />
+        </div>
+      </div>
+      <div class="grid xl:flex xl:gap-6 mt-4 w-full">
+        <div class="group">Antecedentes Heredofamiliares</div>
+        <div class="group w-full">
+          <GeneticTextAreaVue v-model="patient.diseases" />
+        </div>
+      </div>
       <div class="grid xl:grid-cols-12 my-4 xl:gap-12">
         <div class="group w-full col-span-3">
-          <b>Antecedentes heredofamiliares</b>
+          <b>Antecedentes Heredofamiliares</b>
         </div>
-        <div class="group w-full col-span-3">
-          <p>Ingrese enfermedades heredadas</p>
+        <div class="group w-full col-span-2">
+          
         </div>
         <div class="group w-full col-span-6">
           <GeneticTextAreaVue v-model="patient.antecedentesF" />
         </div>
 
         <div class="group w-full col-span-3">
-          <b>Antecedentes personales</b>
+          <b>Antecedentes Personales</b>
         </div>
         <div class="group w-full col-span-3">
-          <p>Habitos toxicos</p>
+          <p>Habitos Toxicos</p>
           <!-- <p>toxic state =>  {{patient.toxicBehaviors}}</p> -->
         </div>
 
@@ -237,16 +260,16 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
               <input
                 type="checkbox"
                 class="mx-2"
-                id="Infusiones"
-                value="Infusiones"
+                id="Vacunas"
+                value="Vacunas"
                 v-model="patient.toxicBehaviors"
               />
-              <label class="cursor-pointer text-sm" for="Infusiones"
-                >Infusiones</label
+              <label class="cursor-pointer text-sm" for="Vacunas"
+                >Vacunas</label
               >
             </div>
 
-            <div>
+              <div>
               <input
                 type="checkbox"
                 class="mx-2"
@@ -264,13 +287,25 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
 
       <div class="grid xl:grid-cols-2 my-8 xl:gap-8">
         <div class="xl:flex gap-4">
-          <div>Fisiologicos</div>
+          <div>Fisiológicos</div>
           <div class="w-full">
             <GeneticTextAreaVue v-model="patient.fisiologics" />
           </div>
-        </div>
+           </div>
         <div class="xl:flex gap-4 justify-end">
           <div>Examenes</div>
+          <div class="w-full">
+            <GeneticTextAreaVue v-model="patient.examns" />
+          </div>
+        </div>
+        <div class="xl:flex gap-4 justify-end">
+          <div>Frecuencia Cardiaca / Tensión Oxigeno</div>
+          <div class="w-full">
+            <GeneticTextAreaVue v-model="patient.examns" />
+          </div>
+        </div>
+        <div class="xl:flex gap-4 justify-end">
+          <div>Entrenamiento / Distancia Recorrida Diaria</div>
           <div class="w-full">
             <GeneticTextAreaVue v-model="patient.examns" />
           </div>

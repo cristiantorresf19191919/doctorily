@@ -73,7 +73,7 @@
         cols="12"
       >
         <h2 class="headline font-weight-bold mb-5">
-          Ecosystem
+          Juan Manuel Franco
         </h2>
 
         <v-row justify="center">

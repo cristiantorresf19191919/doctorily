@@ -52,10 +52,10 @@ const signInWithGoogle = async () => {
         <h1
           class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900"
         >
-          Inicia Sesion
+          INICIO DE SESION
         </h1>
         <p class="lg:w-2/3 mx-auto leading-relaxed text-base">
-          Inicia sesion para registrar profesionales de la salud
+          Usuarios Registrados
         </p>
       </div>
       <div class="lg:w-1/2 md:w-2/3 mx-auto">
@@ -63,7 +63,7 @@ const signInWithGoogle = async () => {
           <div class="p-2 w-full">
             <div class="relative">
               <label for="email" class="leading-7 text-sm text-gray-600"
-                >Email</label
+                >Correo</label
               >
               <input
                 type="email"
@@ -95,7 +95,7 @@ const signInWithGoogle = async () => {
           <div class="p-2 w-full">
             <div class="relative">
               <label for="password" class="leading-7 text-sm text-gray-600"
-                >Password</label
+                >Contraseña</label
               >
               <input
                 type="password"

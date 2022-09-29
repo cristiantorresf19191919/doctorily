@@ -36,7 +36,7 @@
             d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
           ></path>
         </svg>
-        <span class="ml-3 text-xl">Patientsify</span>
+        <span class="ml-3 text-xl">MediEmergencias</span>
         <span class="ml-3 text-xs text-indigo-600" v-if="userLoggedin">{{
           userLoggedin
         }}</span>
@@ -60,7 +60,7 @@
             hover:text-indigo-900 hover:text-lg
           "
         >
-          <router-link to="/login"> Login</router-link></a
+          <router-link to="/login"> INICIAR SESION</router-link></a
         >
         <a
           class="
@@ -72,7 +72,7 @@
             hover:text-indigo-900 hover:text-lg
           "
         >
-          <router-link to="/register"> Register</router-link></a
+          <router-link to="/register"> REGISTRATE</router-link></a
         >
         <a
           class="
@@ -84,7 +84,7 @@
             hover:text-indigo-900 hover:text-lg
           "
         >
-          <router-link to="/dashboard"> Dashboard </router-link></a
+          <router-link to="/dashboard"> BUSCAR PACIENTE </router-link></a
         >
         <a
           class="
@@ -96,7 +96,7 @@
             hover:text-indigo-900 hover:text-lg
           "
         >
-          <router-link to="/create"> Formulario</router-link></a
+          <router-link to="/create"> REGISTRO HISTORIA CLINICA</router-link></a
         >
       </nav>
       <button
