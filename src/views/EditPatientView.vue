@@ -4,23 +4,29 @@ import { reactive, ref, watch } from 'vue'
 import GenericField from "../components/genericField.vue";
 import GeneticTextAreaVue from '../components/GeneticTextArea.vue';
 import useGenericField from '../hooks/useGenericField';
-import { RouterLink, RouterView, useRouter } from 'vue-router';
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router';
 import { v4 as uuidv4 } from 'uuid';
 import { getFirestore, collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref as fireRef, uploadBytes, getMetadata, getDownloadURL } from "firebase/storage";
 import { auth, firebaseApp } from '../firebaseConfig';
 import Toaster from '../components/icons/CheckedIcon.vue';
 
-const patient = reactive({ names: '', cc: '', email: '', city: '', habitosToxicos: [] })
+import { storeToRefs } from 'pinia';
+import ToxicItemList from '../components/ToxicItemList.vue';
+import { usePatientsStore } from '../stores/patients';
+
+
+
 const triggerToast = ref(false);
 
-watch(patient, () => {
-  if (patient.habitosToxicos.includes('Ninguna')) {
-    patient.habitosToxicos = [];
-  }
-});
-
 const router = useRouter();
+const route = useRoute(); 
+const { getCurrentPatient, resetToxicList } = usePatientsStore();
+getCurrentPatient(route.params.id)
+const { currentPatient: patient } = storeToRefs(usePatientsStore());
+watch( patient, () => resetToxicList() );
+
+
 
 const showSpinner = ref(false);
 
@@ -31,7 +37,7 @@ const handleSubmition = async () => {
   const db = getFirestore(firebaseApp);
   const patientsCollection = collection(db, 'patients');
   const patientsSnapshot = await getDocs(patientsCollection);
-  const newId = uuidv4()
+  const newId = route.params.id;
   triggerToast.value = true;
   // Create a root reference
   const storage = getStorage();
@@ -54,7 +60,7 @@ const handleSubmition = async () => {
   } catch (e) {
     console.log(e)
   }
- 
+
 }
 
 const onImageSelected = (event) => {
@@ -73,14 +79,20 @@ const onImageUploaded = (event) => {
 
 const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
 
+const goBackToDetail = () => {
+    router.push("/detail/"+route.params.id);
+}
 
-</script>
-<template>
+
+    </script>
+    <template>
   <Toaster :isVisible="triggerToast" />
   <ProgressSpinner v-if="showSpinner" strokeWidth="8" />
+
   <div class="max-w-4xl mx-auto mt-3 shadow-2xl p-7 rounded-lg">
+    <span class="back-icon" @click="goBackToDetail"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.296 16.294a1 1 0 1 0 1.415 1.414l4.997-5.004a1 1 0 0 0 0-1.413L15.71 6.293a1 1 0 0 0-1.415 1.414L17.59 11H11a8 8 0 0 0-7.996 7.75L3 19a1 1 0 1 0 2 0 6 6 0 0 1 5.775-5.996L11 13h6.586l-3.29 3.294Z" fill="#212121"/></svg></span>
     <h4 class="body-font text-indigo-600 text-center mt-3">
-      DATOS PERSONALES DEL PACIENTE
+      EDITAR DATOS PERSONALES DEL PACIENTE
     </h4>
     <form>
       <div class="relative z-0 mb-6 w-full group">
@@ -169,10 +181,10 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
         <div class="relative w-full group z-0">
           <GenericField v-model="patient.especialidad" label="Especialidad" />
         </div>
-       </div>
-       <div class="grid xl:flex xl:gap-6 mt-4 w-full">
+      </div>
+      <div class="grid xl:flex xl:gap-6 mt-4 w-full">
         <div class="group">Observaciones Medicas:</div>
-        <div class="group w-full">
+        <div class="group w-full">            
           <GeneticTextAreaVue v-model="patient.observacionesMedicas" />
         </div>
       </div>
@@ -258,7 +270,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
               >
             </div>
 
-              <div>
+            <div>
               <input
                 type="checkbox"
                 class="mx-2"
@@ -280,7 +292,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           <div class="w-full">
             <GeneticTextAreaVue v-model="patient.fisiologicos" />
           </div>
-           </div>
+        </div>
         <div class="xl:flex gap-4 justify-end">
           <div>Examenes</div>
           <div class="w-full">
@@ -319,6 +331,21 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
         >
           <template #empty>
             <p>Arrastra y suelta los archivos aca para guardar.</p>
+            <div class="current-image" v-if="patient?.urlImage">
+            <img
+                alt="ecommerce"
+                class="
+                    lg:w-1/2
+                    w-full
+                    lg:h-auto
+                    h-64
+                    object-cover object-center
+                    rounded
+                "
+                :src="patient.urlImage"
+                />
+            </div>
+            
           </template>
         </FileUpload>
       </div>
@@ -373,7 +400,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
     </form>
   </div>
 </template>
-<style lang="scss">
+    <style lang="scss">
 .p-progress-spinner {
   position: fixed !important;
   top: 50% !important;
@@ -388,14 +415,14 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
     bottom: 0;
     left: 0;
     right: 0;
-    transform: translate3d(0,0,0) scale(17.5);
+    transform: translate3d(0, 0, 0) scale(17.5);
     z-index: -1;
   }
 
   svg {
-   width: 10rem;
-   height: 10rem;
-   stroke-width: 4 !important;
+    width: 10rem;
+    height: 10rem;
+    stroke-width: 4 !important;
   }
 }
 .p-fileupload .p-fileupload-content {
@@ -410,7 +437,7 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
   img {
     box-sizing: border-box;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: top;
     position: absolute;
     top: 0;
@@ -418,5 +445,26 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
     right: 0;
     width: 100%;
   }
+}
+.back-icon{
+    cursor: pointer;
+    font-size: 2rem;
+    svg{
+        transform: rotateY(180deg);
+        transition: all .5s ease;
+        &:hover{
+            stroke-width: 5;
+            font-weight: bold;
+            transform: rotateY(180deg) scale(1.1515);
+        }
+    }
+}
+.current-image{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
 }
 </style>

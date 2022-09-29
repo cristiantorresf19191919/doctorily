@@ -11,13 +11,13 @@ const props = defineProps([
 
 const emit = defineEmits(['update:modelValue'])
 
-onMounted( () => emit('update:modelValue', "props.label"));
+// onMounted( () => emit('update:modelValue', "props.label"));
 
     </script>
     
     <template>
   <textarea
-    :model="modelValue"
+     :value="props.modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
     class="
       border

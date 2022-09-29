@@ -3,12 +3,12 @@ import useGenericField from "../hooks/useGenericField";
 import { onMounted } from 'vue';
 const { patient, updateState, primitivo } = useGenericField();// composable
 const props = defineProps([
-  "name", "label","modelValue"
+  "name", "label","modelValue","isEmail"
 ]);
 
 const emit = defineEmits(['update:modelValue'])
 
-onMounted( () => emit('update:modelValue', props.label));
+// onMounted( () => emit('update:modelValue', props.label));
 
 
 
@@ -18,7 +18,8 @@ onMounted( () => emit('update:modelValue', props.label));
   <input
     :value="props.modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
-    type="email"
+    :type="props?.isEmail ? 'email' : 'text'"
+    :name="props.label"
     class="
       block 
       py-2.5

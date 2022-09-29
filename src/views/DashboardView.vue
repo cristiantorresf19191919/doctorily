@@ -14,15 +14,15 @@ onMounted(async () => {
     const db = getFirestore(firebaseApp);
     const patientsCollection = collection(db, 'patients');
     const patientsSnapshot = await getDocs(patientsCollection);
-    const patientsList = patientsSnapshot.docs.map( doc => doc.data());
+    const patientsList = patientsSnapshot.docs.map( doc => ({...doc.data(), id:doc.id}));
     console.log('🚀patientsList >>',patientsList);
     if (!patientsList) return;
     patientsListState.value = [...patientsList];   
 })
 
-const seeDetails = ( patients ) => {
-  setPatients(patients);
-  router.push("/detail")
+const seeDetails = ( patient) => {
+  setPatients(patient);
+  router.push("/detail/"+patient.id)
 }
 
 </script>

@@ -6,6 +6,7 @@ import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import FormPatientView from '../views/FormPatientView.vue'
+import EditPatientView from '../views/EditPatientView.vue'
 import DetailView from '../views/DetailView.vue'
 import {getAuth, onAuthStateChanged, signOut} from "firebase/auth";
 import Swal from 'sweetalert2'
@@ -54,7 +55,8 @@ const router = createRouter({
     },
     { path: '/post/:id', name: 'post', component: PostView },
     { path: '/author/:username', name: 'author', component: AuthorView },
-    { path: '/detail/', name: 'detail', component: DetailView }
+    { path: '/detail/:id', name: 'detail', component: DetailView },
+    { path: '/editPatient/:id', name: 'editPatient', component: EditPatientView }
   ]
 })
 

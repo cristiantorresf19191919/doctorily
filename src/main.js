@@ -10,12 +10,14 @@ import "primevue/resources/themes/md-light-indigo/theme.css"
 import "primevue/resources/primevue.min.css"
 import FileUpload from 'primevue/fileupload';
 import ProgressSpinner from 'primevue/progressspinner';
+import Ripple from 'primevue/ripple';
 
 loadFonts()
 
 createApp(App)
   .use(createPinia())
   .use(PrimeVue,{ripple:true}) 
+  .directive('ripple', Ripple)
   .component('FileUpload',FileUpload)
   .component('ProgressSpinner',ProgressSpinner)
   .use(router)
