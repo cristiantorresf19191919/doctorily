@@ -256,22 +256,8 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
                 v-model="patient.habitosToxicos"
               />
               <label class="cursor-pointer text-sm" for="Drogas">Drogas</label>
-            </div>
-
-            <div>
-              <input
-                type="checkbox"
-                class="mx-2"
-                id="Vacunas"
-                value="Vacunas"
-                v-model="patient.habitosToxicos"
-              />
-              <label class="cursor-pointer text-sm" for="Vacunas"
-                >Vacunas</label
-              >
-            </div>
-
-            <div>
+            </div>        
+              <div>
               <input
                 type="checkbox"
                 class="mx-2"
@@ -286,7 +272,12 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           </div>
         </div>
       </div>
-
+      <div class="xl:flex gap-4 justify-end">
+          <div>Vacunas Aplicadas</div>
+          <div class="w-full">
+            <GeneticTextAreaVue v-model="patient.entrenamiento" />
+          </div>
+        </div>            
       <div class="grid xl:grid-cols-2 my-8 xl:gap-8">
         <div class="xl:flex gap-4">
           <div>Fisiológicos</div>
