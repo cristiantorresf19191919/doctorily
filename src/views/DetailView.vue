@@ -92,13 +92,14 @@ console.log('🚀currentPatient >>', { ...currentPatient });
               </a>
             </span>
           </div>
-          <p class="leading-relaxed">
-            <b>Motivo de Consulta :</b> {{ currentPatient.reason }}
-          </p>
-          <p class="leading-relaxed">
-            <b>Antecedentes Heredofamiliares :</b>
-            {{ currentPatient.antecedentesF }}
-          </p>
+          <div>
+          <h1 class="text-xl font-bold text-black">Motivo de Consulta</h1>
+        </div>
+        <div>{{ currentPatient.motivoConsulta }}</div>
+        <div>
+          <h1 class="text-xl font-bold text-black">Enfermedades</h1>
+        </div>
+        <div>{{ currentPatient.enfermedades }}</div>
           <div
             class="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5"
           >
