@@ -326,7 +326,6 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
           </template>
         </FileUpload>
       </div>
-
       <div class="lg:flex lg:gap-4 lg:justify-center">
         <button
           type="button"
@@ -373,8 +372,9 @@ const sendPicUrl = () => `haaaaaaaaaaaaaaaaaaaaa/accounts/uploadPicture`
         >
           Enviar
         </button>
-      </div>
+        </div>
     </form>
+    <center><iframe width="175" height="120" src="https://reloj-alarma.es/embed/temporizador/ano-nuevo/#theme=0&ampm=0&sound=xylophone" frameborder="0" allowfullscreen></iframe></center>
   </div>
 </template>
 <style lang="scss">
