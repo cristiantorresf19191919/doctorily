@@ -214,5 +214,6 @@ const signInWithGoogle = async () => {
       </div>
     </div>
     <p v-if="errMsg">{{ errMsg }}</p>
+    <center><iframe width="275" height="150" src="https://reloj-alarma.es/embed/#theme=0&ampm=0&showdate=1&sound=bells" frameborder="0" allowfullscreen></iframe></center>
   </section>
 </template>
